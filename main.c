@@ -24,7 +24,7 @@ int main() {
   host_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(sockfd, (struct sockaddr *)&host_addr, host_addrlen) != 0) {
-    perror("couldn't bing the socket!\n");
+    perror("couldn't bind the socket!\n");
     return 1;
   }
   printf("socket BINDED successfully\n");
