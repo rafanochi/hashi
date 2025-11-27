@@ -59,18 +59,22 @@ int send_resp(int sockfd, char *resp) {
   return 0;
 }
 
+int run_server(int sockfd) {
+  int newsockfd = accept(sockfd, NULL, NULL);
+  if (newsockfd < 0) {
+    perror("couldn't ACCEPT the socket!\n");
+  }
+  printf("ACCEPTED!\n");
+  return newsockfd;
+}
+
 // int main() {
+//   int sockfd = create_socket(8080);
+//
 //   for (;;) {
 //     char resp[] = "Hello World!\n";
-
-//     int sockfd = create_socket(8080);
-//     int newsockfd = accept(sockfd, NULL, NULL);
-//     if (newsockfd < 0) {
-//       perror("couldn't ACCEPT the socket!\n");
-//       continue;
-//     }
-//     printf("ACCEPTED!\n");
-
+//     newsockfd = run_server(sockfd);
+//
 //     close(newsockfd);
 //   }
 
