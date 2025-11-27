@@ -5,6 +5,8 @@ module FFI where
 
 import Foreign
 import Foreign.C.Types
+import Foreign.C.String
+import System.IO.Unsafe         -- for unsafePerformIO
 
 foreign import capi "socket.h create_socket"
   c_create_socket :: CInt -> IO CInt
@@ -20,3 +22,17 @@ foreign import capi "socket.h run_server"
 
 foreign import capi "unistd.h close"
   c_close :: CInt -> IO CInt
+
+-- intended to use like: recv sockfd 1024
+recv :: CInt -> Int -> IO String
+recv sockfd size =
+    allocaBytes size $ \buffer -> do
+        c_recive sockfd buffer (fromIntegral size)  
+        peekCStringLen (buffer, fromIntegral size)
+
+send :: CInt -> String -> IO ()
+send sockfd msg = 
+    withCString msg $ \resp -> do
+        c_send sockfd resp 
+        return ()
+
