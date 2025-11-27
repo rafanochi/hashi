@@ -59,20 +59,20 @@ int send_resp(int sockfd, char *resp) {
   return 0;
 }
 
-int main() {
-  for (;;) {
-    char resp[] = "Hello World!\n";
+// int main() {
+//   for (;;) {
+//     char resp[] = "Hello World!\n";
 
-    int sockfd = create_socket(8080);
-    int newsockfd = accept(sockfd, NULL, NULL);
-    if (newsockfd < 0) {
-      perror("couldn't ACCEPT the socket!\n");
-      continue;
-    }
-    printf("ACCEPTED!\n");
+//     int sockfd = create_socket(8080);
+//     int newsockfd = accept(sockfd, NULL, NULL);
+//     if (newsockfd < 0) {
+//       perror("couldn't ACCEPT the socket!\n");
+//       continue;
+//     }
+//     printf("ACCEPTED!\n");
 
-    close(newsockfd);
-  }
+//     close(newsockfd);
+//   }
 
-  return 0;
-}
+//   return 0;
+// }
