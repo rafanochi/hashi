@@ -5,16 +5,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define PORT 8080
-#define BUFFER_SIZE 1024
-
-int main() {
-  char buffer[BUFFER_SIZE];
-  char resp[] = "HTTP/1.0 200 OK\r\n"
-                "Server: webserver-c\r\n"
-                "Content-type: text/html\r\n\r\n"
-                "<html>hello, world</html>\r\n";
-
+int create_socket(int port) {
   // create the socket
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd == -1) {
@@ -27,11 +18,8 @@ int main() {
   int host_addrlen = sizeof(host_addr);
 
   host_addr.sin_family = AF_INET;
-  host_addr.sin_port = htons(PORT);
+  host_addr.sin_port = htons(port);
   host_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  struct sockaddr_in client_addr;
-  int client_addrlen = sizeof(client_addr);
 
   if (bind(sockfd, (struct sockaddr *)&host_addr, host_addrlen) != 0) {
     perror("couldn't bind the socket!\n");
@@ -45,42 +33,42 @@ int main() {
   }
   printf("LISTENING...\n");
 
+  return sockfd;
+}
+
+int recieve_req(int sockfd, char *buffer, int size) {
+  int valread = read(sockfd, buffer, size);
+  if (valread < 0) {
+    perror("couldn't READ\n");
+    return 1;
+  }
+  printf("%s", buffer);
+
+  return 0;
+}
+
+int send_resp(int sockfd, char *resp) {
+  int valwrite = write(sockfd, resp, strlen(resp));
+  if (valwrite < 0) {
+    perror("couldn't send Response\n");
+    return 1;
+  }
+  printf("Response sent successfully!\n");
+
+  return 0;
+}
+
+int main() {
   for (;;) {
-    int newsockfd = accept(sockfd, (struct sockaddr *)&host_addr,
-                           (socklen_t *)&host_addrlen);
+    char resp[] = "Hello World!\n";
+
+    int sockfd = create_socket(8080);
+    int newsockfd = accept(sockfd, NULL, NULL);
     if (newsockfd < 0) {
       perror("couldn't ACCEPT the socket!\n");
       continue;
     }
     printf("ACCEPTED!\n");
-
-    int sockname = getsockname(newsockfd, (struct sockaddr *)&client_addr,
-                               (socklen_t *)&client_addrlen);
-    if (sockname < 0) {
-      perror("couldn't get sockname");
-      continue;
-    }
-
-    char method[BUFFER_SIZE], uri[BUFFER_SIZE], version[BUFFER_SIZE];
-    sscanf(buffer, "%s %s %s", method, uri, version);
-    printf("\nClient ADDRESS =  [%s:%u] %s %s %s\n\n",
-           inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), method,
-           version, uri);
-
-    int valread = read(newsockfd, buffer, BUFFER_SIZE);
-    if (valread < 0) {
-      perror("couldn't READ\n");
-      continue;
-    }
-
-    printf("%s", buffer);
-
-    int valwrite = write(newsockfd, resp, strlen(resp));
-    if (valwrite < 0) {
-      perror("couldn't WRITE\n");
-      continue;
-    }
-    printf("Response sent successfully!\n");
 
     close(newsockfd);
   }
