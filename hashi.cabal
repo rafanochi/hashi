@@ -75,3 +75,7 @@ executable hashi
     include-dirs: include
 
     c-sources: include/socket.c
+    cc-options: -Wall
+    extra-libraries: c
+
+
