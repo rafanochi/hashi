@@ -9,8 +9,6 @@ import Foreign.C.String
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BL
 
-import MyHttp
-
 foreign import capi "socket.h create_socket"
   c_create_socket :: CInt -> IO CInt
 
@@ -42,8 +40,4 @@ send sockfd msg =
 sendJson :: ToJSON a => CInt -> a -> IO () 
 sendJson sockfd msg = do 
     let str = BL.unpack $ encode msg
-    send sockfd (toHttpResponse str) 
-
-
-    
-
+    send sockfd str 

@@ -15,7 +15,7 @@ response = Waifu {name="Asuna", age=18}
 
 main :: IO ()
 main = do
-  sockfd <- c_create_socket (fromIntegral 8080)
+  sockfd <- c_create_socket (fromIntegral 8081)
   forever $ do
         new_sockfd <- c_run_server sockfd
         guard (fromIntegral new_sockfd>=0)
@@ -26,5 +26,3 @@ main = do
         sendJson new_sockfd response
 
         c_close new_sockfd
-
-
