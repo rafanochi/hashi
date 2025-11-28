@@ -6,7 +6,10 @@ module FFI where
 import Foreign
 import Foreign.C.Types
 import Foreign.C.String
-import System.IO.Unsafe         -- for unsafePerformIO
+import Data.Aeson
+import qualified Data.ByteString.Lazy.Char8 as BL
+
+import MyHttp
 
 foreign import capi "socket.h create_socket"
   c_create_socket :: CInt -> IO CInt
@@ -35,4 +38,12 @@ send sockfd msg =
     withCString msg $ \resp -> do
         c_send sockfd resp 
         return ()
+
+sendJson :: ToJSON a => CInt -> a -> IO () 
+sendJson sockfd msg = do 
+    let str = BL.unpack $ encode msg
+    send sockfd (toHttpResponse str) 
+
+
+    
 

@@ -1,14 +1,17 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Main where
 
 import FFI
 import Control.Monad
+import Data.Aeson
+import GHC.Generics
 
-response :: String
-response = "HTTP/1.1 200 OK\r\n\
-           \Content-Length: 27\r\n\
-           \Content-Type: text/plain\r\n\
-           \\r\n\
-           \Hello from ASUNA: be gentle..."
+data Waifu = Waifu {name::String, age::Int} deriving (Show, Generic)
+instance FromJSON Waifu
+instance ToJSON Waifu
+
+response :: Waifu
+response = Waifu {name="Asuna", age=18} 
 
 main :: IO ()
 main = do
@@ -18,9 +21,9 @@ main = do
         guard (fromIntegral new_sockfd>=0)
 
         msg <- recv new_sockfd 1024 
-        putStrLn msg
+        putStrLn msg 
 
-        send new_sockfd response
+        sendJson new_sockfd response
 
         c_close new_sockfd
 
