@@ -36,7 +36,7 @@ data User = User
   , username :: String
   , email :: String
   , password :: String
-  , phone_number :: Integer
+  , phone_number :: String
   , car :: Maybe Vehicle
   , driver_licence :: Maybe Bool
   , role :: UserRole
@@ -50,7 +50,7 @@ data Order = Order
   , destination :: String
   , client :: User
   , courier :: User
-  , voulme :: Double
+  , volume :: Double
   , mass :: Double
   , time :: Day
   }

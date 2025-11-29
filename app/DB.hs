@@ -17,9 +17,10 @@
 
 module DB where
 
+import ADT (UserRole, VehicleType)
+import Data.Time
 import Database.Persist.Sqlite
 import Database.Persist.TH
-import ADT (UserRole, VehicleType)
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -27,13 +28,30 @@ share
 
 Vehicle
   vahicleType VehicleType  
+  brand String
+  model String
+  number String
+  deriving Show
+
 User 
   name String 
   surname String 
   username String
   email String
   password String 
-  phoneNumber Int
+  phoneNumber String
   role UserRole
+  car VehicleId Maybe 
+  driver_licence Bool Maybe
+  deriving Show
+
+Order 
+  address String
+  destination String
+  client UserId
+  courier UserId
+  volume Double 
+  mass Double
+  time Day
   deriving Show
 |]
