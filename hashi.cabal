@@ -50,7 +50,7 @@ executable hashi
     ADT
     DB
     FFI
-    MyProtocol
+    Hanekawa
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
