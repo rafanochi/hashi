@@ -31,4 +31,5 @@ class (ToJSON a, FromJSON a) => Hanekawa a where
   wrap Nothing s = Response{status = s, result = Nothing}
   wrap (Just res) s = Response{status = s, result = Just (toJSON res)}
 
-  unwrap :: Request -> (String, Maybe a)
+  unwrap :: Request -> (String, Maybe a) -- method and params
+  unwrap req = 

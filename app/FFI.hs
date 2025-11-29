@@ -4,6 +4,9 @@
 module FFI where
 
 import Data.Aeson
+import qualified Data.ByteString as BS
+import qualified Data.ByteString as Bl
+import Data.ByteString.Builder (lazyByteString)
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Foreign
 import Foreign.C.String
@@ -41,3 +44,11 @@ sendJson :: (ToJSON a) => CInt -> a -> IO ()
 sendJson sockfd msg = do
   let str = BL.unpack $ encode msg
   send sockfd str
+
+recvJson :: (FromJSON a) => CInt -> Int -> IO (Maybe a)
+recvJson sockfd size =
+  allocaBytes size $ \buffer -> do
+    _ <- c_recive sockfd buffer (fromIntegral size)
+    bs <- BS.packCStringLen (buffer, fromIntegral size)
+    let lazyBS = Bl.fromStrict bs
+    return $ decode lazyBS
