@@ -1,15 +1,24 @@
-module DTO where
+{-# LANGUAGE DeriveGeneric #-}
 
+module ADT where
+
+import Data.Aeson
 import Data.Time
+import GHC.Generics
 
-data VehicleType = Light | Medium | Heavy
+data VehicleType = Light | Medium | Heavy deriving (Show, Generic)
+instance FromJSON VehicleType
+instance ToJSON VehicleType
 
 data Vehicle = Vehicle
   { vehicle_type :: VehicleType
   , brand :: String
-  , model :: String 
+  , model :: String
   , number :: String
   }
+  deriving (Show, Generic)
+instance FromJSON Vehicle
+instance ToJSON Vehicle
 
 data User
   = Client
@@ -30,6 +39,9 @@ data User
       , car :: Vehicle
       , driver_licence :: Bool
       }
+  deriving (Show, Generic)
+instance ToJSON User
+instance FromJSON User
 
 data Order = Order
   { address :: String
@@ -38,5 +50,8 @@ data Order = Order
   , courier :: User
   , voulme :: Double
   , mass :: Double
-  , time :: Day 
+  , time :: Day
   }
+  deriving (Show, Generic)
+instance ToJSON Order
+instance FromJSON Order
