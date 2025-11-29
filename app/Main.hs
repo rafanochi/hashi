@@ -4,8 +4,8 @@ module Main where
 
 import Control.Monad
 import Data.Aeson
-import FFI
 import GHC.Generics
+import FFI
 
 data Waifu = Waifu {name :: String, age :: Int} deriving (Show, Generic)
 instance FromJSON Waifu
