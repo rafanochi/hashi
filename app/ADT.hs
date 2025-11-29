@@ -1,12 +1,16 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module ADT where
 
 import Data.Aeson
 import Data.Time
 import GHC.Generics
+import Database.Persist.TH
 
-data VehicleType = Light | Medium | Heavy deriving (Show, Generic)
+data VehicleType = Light | Medium | Heavy deriving (Show, Read, Eq, Generic) 
+
+derivePersistField "VehicleType"
 instance FromJSON VehicleType
 instance ToJSON VehicleType
 
@@ -20,25 +24,23 @@ data Vehicle = Vehicle
 instance FromJSON Vehicle
 instance ToJSON Vehicle
 
-data User
-  = Client
-      { name :: String
-      , surname :: String
-      , username :: String
-      , email :: String
-      , password :: String
-      , phone_number :: Integer
-      }
-  | Courier
-      { name :: String
-      , surname :: String
-      , username :: String
-      , email :: String
-      , password :: String
-      , phone_number :: Integer
-      , car :: Vehicle
-      , driver_licence :: Bool
-      }
+data UserRole = Client | Courier deriving (Show, Read, Eq, Generic)
+
+derivePersistField "UserRole"
+instance ToJSON UserRole
+instance FromJSON UserRole
+
+data User = User
+  { name :: String
+  , surname :: String
+  , username :: String
+  , email :: String
+  , password :: String
+  , phone_number :: Integer
+  , car :: Maybe Vehicle
+  , driver_licence :: Maybe Bool
+  , role :: UserRole
+  }
   deriving (Show, Generic)
 instance ToJSON User
 instance FromJSON User
