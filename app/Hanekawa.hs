@@ -8,7 +8,7 @@ module Hanekawa where
 import Data.Aeson
 import GHC.Generics
 
-data Status = Ok | Error
+data Status = Ok | Err
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
@@ -32,4 +32,8 @@ class (ToJSON a, FromJSON a) => Hanekawa a where
   wrap (Just res) s = Response{status = s, result = Just (toJSON res)}
 
   unwrap :: Request -> (String, Maybe a) -- method and params
-  unwrap req = 
+  unwrap (Request{method = m, params = p}) = case p of
+    Nothing -> (m, Nothing)
+    Just json -> case fromJSON json of
+      Error _ -> (m, Nothing)
+      Success x -> (m, Just x)

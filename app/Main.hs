@@ -21,7 +21,7 @@ main = do
     new_sockfd <- c_run_server sockfd
     guard $ (fromIntegral new_sockfd :: Int) >= 0
 
-    msg <- recv new_sockfd 1024
+    msg <- recvJson new_sockfd 1024
     putStrLn msg
 
     sendJson new_sockfd response

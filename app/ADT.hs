@@ -14,6 +14,7 @@ derivePersistField "VehicleType"
 instance FromJSON VehicleType
 instance ToJSON VehicleType
 
+
 data Vehicle = Vehicle
   { vehicle_type :: VehicleType
   , brand :: String
