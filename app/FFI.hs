@@ -10,7 +10,7 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import Foreign
 import Foreign.C.String
 import Foreign.C.Types
-import Hanekawa (Hanekawa (wrap, unwrap), Status (Ok))
+import Hanekawa (Request, Status, wrap)
 
 foreign import capi "socket.h create_socket"
   c_create_socket :: CInt -> IO CInt
@@ -40,18 +40,16 @@ send sockfd msg =
     _ <- c_send sockfd resp
     return ()
 
-sendJson :: (Hanekawa a) => CInt -> a -> IO ()
-sendJson sockfd msg = do
-  let str = BL.unpack $ encode $ wrap (Just msg) Ok
+sendJson :: (ToJSON a) => CInt -> Status -> a -> IO ()
+sendJson sockfd s msg = do
+  let str = BL.unpack $ encode $ wrap s (Just msg)
   send sockfd str
 
 -- recieve the request as ADT
-recvJson :: (Hanekawa a) => CInt -> Int -> IO (String, Maybe a)
+recvJson :: CInt -> Int -> IO (Maybe Request)
 recvJson sockfd size =
   allocaBytes size $ \buffer -> do
     recieved_byte_size <- c_recive sockfd buffer (fromIntegral size)
     bs <- BS.packCStringLen (buffer, fromIntegral recieved_byte_size)
     let lazyBS = Bl.fromStrict bs
-    case decode lazyBS of
-      Nothing -> return ("", Nothing)
-      Just x -> return $ unwrap x 
+    return $ decode lazyBS

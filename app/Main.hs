@@ -8,14 +8,14 @@ import Control.Monad
 import Data.Aeson
 import FFI
 import GHC.Generics
-import Hanekawa (Hanekawa)
+import Hanekawa (Status (Ok))
 
 data Waifu = Waifu
   { name :: String
   , age :: Int
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON, ToJSON, Hanekawa)
+  deriving anyclass (FromJSON, ToJSON)
 
 response :: Waifu
 response = Waifu{name = "Asuna", age = 18}
@@ -30,6 +30,6 @@ main = do
     msg <- recvJson new_sockfd 1024
     print msg
 
-    sendJson new_sockfd response
+    sendJson new_sockfd Ok response
 
     c_close new_sockfd
