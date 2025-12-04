@@ -7,9 +7,8 @@ module Main where
 import Control.Monad
 import Data.Aeson
 import FFI
-import Foreign.C (CInt)
 import GHC.Generics
-import Hanekawa (Request (method), Status (Err, Ok))
+import Hanekawa (Status (Ok), Request (method))
 
 data Waifu = Waifu
   { name :: String
@@ -21,21 +20,11 @@ data Waifu = Waifu
 response :: Waifu
 response = Waifu{name = "Asuna", age = 18}
 
-handleRequestError :: CInt -> IO ()
-handleRequestError sockfd = do
-  let msg = "Wrong Request"
-  putStrLn msg
-  sendJson sockfd Err msg
-
-handleRequest :: CInt -> Maybe Request -> IO ()
-handleRequest sockfd Nothing = handleRequestError sockfd
-handleRequest sockfd (Just req) = case method req of
-  "createUser" -> sendJson sockfd Ok "User created successfully!"
-  _ -> handleRequestError sockfd
+handleRequest :: (Maybe Request) -> IO ()
 
 main :: IO ()
 main = do
-  sockfd <- c_create_socket 8080
+  sockfd <- c_create_socket 8081
   forever $ do
     new_sockfd <- c_run_server sockfd
     guard $ (fromIntegral new_sockfd :: Int) >= 0
@@ -43,6 +32,10 @@ main = do
     maybeReq <- recvJson new_sockfd 1024
     print maybeReq
 
-    handleRequest new_sockfd maybeReq
+    case method maybeReq of
+      case1 -> result
+      case2 -> result
+
+    sendJson new_sockfd Ok response
 
     c_close new_sockfd
