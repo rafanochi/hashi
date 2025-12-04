@@ -10,6 +10,7 @@ import FFI
 import Foreign.C (CInt)
 import GHC.Generics
 import Hanekawa (Request (method), Status (Err, Ok))
+import Handler (createUser)
 
 data Waifu = Waifu
   { name :: String
@@ -30,7 +31,7 @@ handleRequestError sockfd = do
 handleRequest :: CInt -> Maybe Request -> IO ()
 handleRequest sockfd Nothing = handleRequestError sockfd
 handleRequest sockfd (Just req) = case method req of
-  "createUser" -> sendJson sockfd Ok "User created successfully!"
+  "createUser" -> createUser sockfd
   _ -> handleRequestError sockfd
 
 main :: IO ()

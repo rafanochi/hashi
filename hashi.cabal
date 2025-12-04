@@ -51,6 +51,7 @@ executable hashi
     DB
     FFI
     Hanekawa
+    Handler
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
