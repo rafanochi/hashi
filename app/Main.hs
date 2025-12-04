@@ -9,8 +9,8 @@ import Data.Aeson
 import FFI
 import Foreign.C (CInt)
 import GHC.Generics
-import Hanekawa (Request (method), Status (Err, Ok))
 import Handler (createUser)
+import Hanekawa (Request (method, params), Status (Err, Ok))
 
 data Waifu = Waifu
   { name :: String
@@ -30,8 +30,8 @@ handleRequestError sockfd = do
 
 handleRequest :: CInt -> Maybe Request -> IO ()
 handleRequest sockfd Nothing = handleRequestError sockfd
-handleRequest sockfd (Just req) = case method req of
-  "createUser" -> createUser sockfd
+handleRequest sockfd (Just req) = case (method req, params req) of
+  ("createUser", Just ps) -> createUser sockfd ps
   _ -> handleRequestError sockfd
 
 main :: IO ()

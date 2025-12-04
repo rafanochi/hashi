@@ -5,15 +5,14 @@ module ADT where
 
 import Data.Aeson
 import Data.Time
-import GHC.Generics
 import Database.Persist.TH
+import GHC.Generics
 
-data VehicleType = Light | Medium | Heavy deriving (Show, Read, Eq, Generic) 
+data VehicleType = Light | Medium | Heavy deriving (Show, Read, Eq, Generic)
 
 derivePersistField "VehicleType"
 instance FromJSON VehicleType
 instance ToJSON VehicleType
-
 
 data Vehicle = Vehicle
   { vehicle_type :: VehicleType
@@ -33,11 +32,11 @@ instance FromJSON UserRole
 
 data User = User
   { name :: String
-  , surname :: String
-  , username :: String
-  , email :: String
-  , password :: String
-  , phone_number :: String
+  , surname :: Maybe String
+  , username :: Maybe String
+  , email :: Maybe String
+  , password :: Maybe String
+  , phone_number :: Maybe String
   , car :: Maybe Vehicle
   , driver_licence :: Maybe Bool
   , role :: UserRole
