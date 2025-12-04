@@ -6,12 +6,11 @@ module FFI where
 import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString as Bl
-import Data.ByteString.Builder (lazyByteString)
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Foreign
 import Foreign.C.String
 import Foreign.C.Types
-import Hanekawa (Hanekawa (wrap), Status (Ok))
+import Hanekawa (Hanekawa (wrap, unwrap), Status (Ok))
 
 foreign import capi "socket.h create_socket"
   c_create_socket :: CInt -> IO CInt
@@ -47,10 +46,12 @@ sendJson sockfd msg = do
   send sockfd str
 
 -- recieve the request as ADT
-recvJson :: (Hanekawa a) => CInt -> Int -> IO (Maybe a)
+recvJson :: (Hanekawa a) => CInt -> Int -> IO (String, Maybe a)
 recvJson sockfd size =
   allocaBytes size $ \buffer -> do
     recieved_byte_size <- c_recive sockfd buffer (fromIntegral size)
     bs <- BS.packCStringLen (buffer, fromIntegral recieved_byte_size)
     let lazyBS = Bl.fromStrict bs
-    return $  decode lazyBS
+    case decode lazyBS of
+      Nothing -> return ("", Nothing)
+      Just x -> return $ unwrap x 

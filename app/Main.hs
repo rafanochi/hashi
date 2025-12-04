@@ -1,15 +1,21 @@
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
 
 module Main where
 
 import Control.Monad
 import Data.Aeson
-import GHC.Generics
 import FFI
+import GHC.Generics
+import Hanekawa (Hanekawa)
 
-data Waifu = Waifu {name :: String, age :: Int} deriving (Show, Generic)
-instance FromJSON Waifu
-instance ToJSON Waifu
+data Waifu = Waifu
+  { name :: String
+  , age :: Int
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON, Hanekawa)
 
 response :: Waifu
 response = Waifu{name = "Asuna", age = 18}
@@ -22,7 +28,7 @@ main = do
     guard $ (fromIntegral new_sockfd :: Int) >= 0
 
     msg <- recvJson new_sockfd 1024
-    putStrLn msg
+    print msg
 
     sendJson new_sockfd response
 

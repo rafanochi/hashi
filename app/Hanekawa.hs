@@ -10,23 +10,23 @@ import GHC.Generics
 
 data Status = Ok | Err
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, Hanekawa)
 
 data Response = Response
   { status :: Status
   , result :: Maybe Value
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, Hanekawa)
 
 data Request = Request
   { method :: String
   , params :: Maybe Value
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, Hanekawa)
 
-class (ToJSON a, FromJSON a) => Hanekawa a where
+class (ToJSON a, FromJSON a, Show a) => Hanekawa a where
   wrap :: Maybe a -> Status -> Response
   wrap Nothing s = Response{status = s, result = Nothing}
   wrap (Just res) s = Response{status = s, result = Just (toJSON res)}
