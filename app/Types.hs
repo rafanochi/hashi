@@ -5,7 +5,7 @@
 
 module Types where
 
-import DB (Order, OrderId, User, UserId)
+import DB (Order, OrderId, User, UserId, Vehicle, VehicleId)
 import Data.Aeson
 import Database.Persist.TH
 import GHC.Generics
@@ -30,6 +30,13 @@ data ReplaceUser = ReplaceUser
 data ReplaceOrder = ReplaceOrder
   { oid :: OrderId
   , order :: Order
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data ReplaceVehicle = ReplaceVehicle
+  { vid :: VehicleId
+  , vehicle :: Vehicle
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

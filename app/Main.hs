@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -8,11 +6,9 @@ module Main where
 import Control.Monad
 import Control.Monad.Logger (runStdoutLoggingT)
 import DB (migrateAll)
-import Data.Aeson
 import Database.Persist.Sql (runMigration, runSqlPool)
 import Database.Persist.Sqlite (createSqlitePool)
 import FFI
-import GHC.Generics
 import Router (router)
 
 main :: IO ()

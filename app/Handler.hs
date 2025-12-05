@@ -8,7 +8,7 @@ import Database.Persist.Sql (ConnectionPool, PersistStoreRead (get), PersistStor
 import FFI (sendJson)
 import Foreign.C (CInt)
 import Hanekawa (Status (Err, Ok))
-import Types (ReplaceOrder (ReplaceOrder, oid, order), ReplaceUser (ReplaceUser, uid, user))
+import Types (ReplaceOrder (ReplaceOrder, oid, order), ReplaceUser (ReplaceUser, uid, user), ReplaceVehicle (ReplaceVehicle, vehicle, vid))
 
 handleError :: CInt -> String -> IO ()
 handleError sockfd = sendJson sockfd Err
@@ -83,4 +83,37 @@ deleteOrder pool sockfd json = do
     Success x -> do
       y <- runSqlPool (delete x) pool
       sendJson sockfd Ok $ show y ++ "Order deleted successfully"
+    Error msg -> handleParseError sockfd msg
+
+-------------- Vehicle
+createVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+createVehicle pool sockfd json = do
+  case fromJSON @DB.Vehicle json of
+    Success x -> do
+      _ <- runSqlPool (insert x) pool
+      sendJson sockfd Ok $ "Vehicle created successfully: " ++ show x
+    Error msg -> handleParseError sockfd msg
+
+getVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+getVehicle pool sockfd json = do
+  case fromJSON @VehicleId json of
+    Success x -> do
+      _order <- runSqlPool (get x) pool
+      sendJson sockfd Ok x
+    Error msg -> handleParseError sockfd msg
+
+replaceVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+replaceVehicle pool sockfd json = do
+  case fromJSON @ReplaceVehicle json of
+    Success ReplaceVehicle{vid = x, vehicle = y} -> do
+      _ <- runSqlPool (replace x y) pool
+      sendJson sockfd Ok $ "Vehicle updated successfully: " ++ show y
+    Error msg -> handleParseError sockfd msg
+
+deleteVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+deleteVehicle pool sockfd json = do
+  case fromJSON @VehicleId json of
+    Success x -> do
+      y <- runSqlPool (delete x) pool
+      sendJson sockfd Ok $ show y ++ "Vehicle deleted successfully"
     Error msg -> handleParseError sockfd msg
