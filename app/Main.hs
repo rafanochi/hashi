@@ -13,7 +13,7 @@ import Database.Persist.Sql (runMigration, runSqlPool)
 import Database.Persist.Sqlite (createSqlitePool)
 import FFI
 import GHC.Generics
-import Handler (handleRequest)
+import Handler (router)
 
 data Waifu = Waifu
   { name :: String
@@ -38,6 +38,6 @@ main = do
     maybeReq <- recvJson new_sockfd 1024
     print maybeReq
 
-    handleRequest pool new_sockfd maybeReq
+    router pool new_sockfd maybeReq
 
     c_close new_sockfd

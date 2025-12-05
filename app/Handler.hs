@@ -25,9 +25,9 @@ handleRequestError sockfd = do
   putStrLn msg
   sendJson sockfd Err msg
 
-handleRequest :: ConnectionPool -> CInt -> Maybe Request -> IO ()
-handleRequest _ sockfd Nothing = handleRequestError sockfd
-handleRequest pool sockfd (Just req) = case (method req, params req) of
+router :: ConnectionPool -> CInt -> Maybe Request -> IO ()
+router _ sockfd Nothing = handleRequestError sockfd
+router pool sockfd (Just req) = case (method req, params req) of
   ("createUser", Just ps) -> createUser pool sockfd ps
   ("replaceUser", Just ps) -> replaceUser pool sockfd ps
   _ -> handleRequestError sockfd
