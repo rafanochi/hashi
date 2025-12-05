@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Handler where
@@ -8,29 +7,14 @@ import Data.Aeson
 import Database.Persist.Sql (ConnectionPool, PersistStoreWrite (insert, replace), runSqlPool)
 import FFI (sendJson)
 import Foreign.C (CInt)
-import GHC.Generics (Generic)
-import Hanekawa (Request (method, params), Status (Err, Ok))
-
-data ReplaceUser = ReplaceUser
-  { uid :: UserId
-  , user :: User
-  }
-  deriving (Show, Generic)
-instance ToJSON ReplaceUser
-instance FromJSON ReplaceUser
+import Hanekawa (Status (Err, Ok))
+import Types (ReplaceUser (ReplaceUser, uid, user))
 
 handleRequestError :: CInt -> IO ()
 handleRequestError sockfd = do
   let msg = "Wrong Request"
   putStrLn msg
   sendJson sockfd Err msg
-
-router :: ConnectionPool -> CInt -> Maybe Request -> IO ()
-router _ sockfd Nothing = handleRequestError sockfd
-router pool sockfd (Just req) = case (method req, params req) of
-  ("createUser", Just ps) -> createUser pool sockfd ps
-  ("replaceUser", Just ps) -> replaceUser pool sockfd ps
-  _ -> handleRequestError sockfd
 
 createUser :: ConnectionPool -> CInt -> Value -> IO ()
 createUser pool sockfd json = do
@@ -42,6 +26,14 @@ createUser pool sockfd json = do
 
 replaceUser :: ConnectionPool -> CInt -> Value -> IO ()
 replaceUser pool sockfd json = do
+  case fromJSON @ReplaceUser json of
+    Success ReplaceUser{uid = _uid, user = _user} -> do
+      _ <- runSqlPool (replace _uid _user) pool
+      sendJson sockfd Ok $ "User updated successfully: " ++ show _user
+    Error msg -> sendJson sockfd Ok $ "Can't parse params: " ++ show msg
+
+getUser :: ConnectionPool -> CInt -> Value -> IO ()
+getUser pool sockfd json = do
   case fromJSON @ReplaceUser json of
     Success ReplaceUser{uid = _uid, user = _user} -> do
       _ <- runSqlPool (replace _uid _user) pool

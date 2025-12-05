@@ -13,7 +13,7 @@ import Database.Persist.Sql (runMigration, runSqlPool)
 import Database.Persist.Sqlite (createSqlitePool)
 import FFI
 import GHC.Generics
-import Handler (router)
+import Router (router)
 
 data Waifu = Waifu
   { name :: String

@@ -52,6 +52,7 @@ executable hashi
     FFI
     Hanekawa
     Handler
+    Router
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
