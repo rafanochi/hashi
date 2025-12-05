@@ -45,7 +45,6 @@ sendJson sockfd s msg = do
   let str = BL.unpack $ encode $ wrap s (Just msg)
   send sockfd str
 
--- recieve the request as ADT
 recvJson :: CInt -> Int -> IO (Maybe Request)
 recvJson sockfd size =
   allocaBytes size $ \buffer -> do
