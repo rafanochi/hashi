@@ -15,16 +15,6 @@ import FFI
 import GHC.Generics
 import Router (router)
 
-data Waifu = Waifu
-  { name :: String
-  , age :: Int
-  }
-  deriving stock (Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
-
-response :: Waifu
-response = Waifu{name = "Asuna", age = 18}
-
 main :: IO ()
 main = do
   sockfd <- c_create_socket 8080
