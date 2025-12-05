@@ -67,4 +67,15 @@ Order json
   mass Double
   time Day
   deriving Show
+
+Hub json
+  address String
+  city String
+  deriving Show
+
+HubConnection json
+  fromHub HubId
+  toId HubId
+  distance Double
+  deriving Show
 |]

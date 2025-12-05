@@ -1,24 +1,26 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE TemplateHaskell #-}
+
+-- {-# LANGUAGE TemplateHaskell #-}
 
 module Types where
 
-import DB (Order, OrderId, User, UserId, Vehicle, VehicleId)
+import DB (Hub, HubConnection, HubConnectionId, HubId, Order, OrderId, User, UserId, Vehicle, VehicleId)
 import Data.Aeson
-import Database.Persist.TH
+
+-- import Database.Persist.TH
 import GHC.Generics
 
-data VehicleType = Light | Medium | Heavy
-  deriving stock (Read, Eq, Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
-derivePersistField "VehicleType"
+-- data VehicleType = Light | Medium | Heavy
+--   deriving stock (Read, Eq, Show, Generic)
+--   deriving anyclass (FromJSON, ToJSON)
+-- derivePersistField "VehicleType"
 
-data UserRole = Client | Courier
-  deriving stock (Read, Eq, Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
-derivePersistField "UserRole"
+-- data UserRole = Client | Courier
+--   deriving stock (Read, Eq, Show, Generic)
+--   deriving anyclass (FromJSON, ToJSON)
+-- derivePersistField "UserRole"
 
 data ReplaceUser = ReplaceUser
   { uid :: UserId
@@ -37,6 +39,20 @@ data ReplaceOrder = ReplaceOrder
 data ReplaceVehicle = ReplaceVehicle
   { vid :: VehicleId
   , vehicle :: Vehicle
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data ReplaceHub = ReplaceHub
+  { hid :: HubId
+  , hub :: Hub
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data ReplaceHubConnection = ReplaceHubConnection
+  { hcid :: HubConnectionId
+  , hcub :: HubConnection
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

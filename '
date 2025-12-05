@@ -8,7 +8,7 @@ import Database.Persist.Sql (ConnectionPool, PersistStoreRead (get), PersistStor
 import FFI (sendJson)
 import Foreign.C (CInt)
 import Hanekawa (Status (Err, Ok))
-import Types (ReplaceHub (ReplaceHub, hid, hub), ReplaceHubConnection (ReplaceHubConnection, hcid, hcub), ReplaceOrder (ReplaceOrder, oid, order), ReplaceUser (ReplaceUser, uid, user), ReplaceVehicle (ReplaceVehicle, vehicle, vid))
+import Types (ReplaceOrder (ReplaceOrder, oid, order), ReplaceUser (ReplaceUser, uid, user), ReplaceVehicle (ReplaceVehicle, vehicle, vid))
 
 handleError :: CInt -> String -> IO ()
 handleError sockfd = sendJson sockfd Err
@@ -117,69 +117,37 @@ deleteVehicle pool sockfd json = do
       y <- runSqlPool (delete x) pool
       sendJson sockfd Ok $ show y ++ "Vehicle deleted successfully"
     Error msg -> handleParseError sockfd msg
+    
 
 -------------- Hub
-createHub :: ConnectionPool -> CInt -> Value -> IO ()
-createHub pool sockfd json = do
-  case fromJSON @DB.Hub json of
+createVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+createVehicle pool sockfd json = do
+  case fromJSON @DB.Vehicle json of
     Success x -> do
       _ <- runSqlPool (insert x) pool
-      sendJson sockfd Ok $ "Hub created successfully: " ++ show x
+      sendJson sockfd Ok $ "Vehicle created successfully: " ++ show x
     Error msg -> handleParseError sockfd msg
 
-getHub :: ConnectionPool -> CInt -> Value -> IO ()
-getHub pool sockfd json = do
-  case fromJSON @HubId json of
+getVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+getVehicle pool sockfd json = do
+  case fromJSON @VehicleId json of
     Success x -> do
       _order <- runSqlPool (get x) pool
       sendJson sockfd Ok x
     Error msg -> handleParseError sockfd msg
 
-replaceHub :: ConnectionPool -> CInt -> Value -> IO ()
-replaceHub pool sockfd json = do
-  case fromJSON @ReplaceHub json of
-    Success ReplaceHub{hid = x, hub = y} -> do
+replaceVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+replaceVehicle pool sockfd json = do
+  case fromJSON @ReplaceVehicle json of
+    Success ReplaceVehicle{vid = x, vehicle = y} -> do
       _ <- runSqlPool (replace x y) pool
-      sendJson sockfd Ok $ "Hub updated successfully: " ++ show y
+      sendJson sockfd Ok $ "Vehicle updated successfully: " ++ show y
     Error msg -> handleParseError sockfd msg
 
-deleteHub :: ConnectionPool -> CInt -> Value -> IO ()
-deleteHub pool sockfd json = do
-  case fromJSON @HubId json of
+deleteVehicle :: ConnectionPool -> CInt -> Value -> IO ()
+deleteVehicle pool sockfd json = do
+  case fromJSON @VehicleId json of
     Success x -> do
       y <- runSqlPool (delete x) pool
-      sendJson sockfd Ok $ show y ++ "Hub deleted successfully"
-    Error msg -> handleParseError sockfd msg
-
--------------- HubConnection
-createHubConnection :: ConnectionPool -> CInt -> Value -> IO ()
-createHubConnection pool sockfd json = do
-  case fromJSON @DB.HubConnection json of
-    Success x -> do
-      _ <- runSqlPool (insert x) pool
-      sendJson sockfd Ok $ "HubConnection created successfully: " ++ show x
-    Error msg -> handleParseError sockfd msg
-
-getHubConnection :: ConnectionPool -> CInt -> Value -> IO ()
-getHubConnection pool sockfd json = do
-  case fromJSON @HubConnectionId json of
-    Success x -> do
-      _order <- runSqlPool (get x) pool
-      sendJson sockfd Ok x
-    Error msg -> handleParseError sockfd msg
-
-replaceHubConnection :: ConnectionPool -> CInt -> Value -> IO ()
-replaceHubConnection pool sockfd json = do
-  case fromJSON @ReplaceHubConnection json of
-    Success ReplaceHubConnection{hcid = x, hcub = y} -> do
-      _ <- runSqlPool (replace x y) pool
-      sendJson sockfd Ok $ "HubConnection updated successfully: " ++ show y
-    Error msg -> handleParseError sockfd msg
-
-deleteHubConnection :: ConnectionPool -> CInt -> Value -> IO ()
-deleteHubConnection pool sockfd json = do
-  case fromJSON @HubConnectionId json of
-    Success x -> do
-      y <- runSqlPool (delete x) pool
-      sendJson sockfd Ok $ show y ++ "HubConnection deleted successfully"
+      sendJson sockfd Ok $ show y ++ "Vehicle deleted successfully"
     Error msg -> handleParseError sockfd msg
