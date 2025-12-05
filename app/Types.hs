@@ -5,7 +5,7 @@
 
 module Types where
 
-import DB (User, UserId)
+import DB (Order, OrderId, User, UserId)
 import Data.Aeson
 import Database.Persist.TH
 import GHC.Generics
@@ -23,6 +23,13 @@ derivePersistField "UserRole"
 data ReplaceUser = ReplaceUser
   { uid :: UserId
   , user :: User
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data ReplaceOrder = ReplaceOrder
+  { oid :: OrderId
+  , order :: Order
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
