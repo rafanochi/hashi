@@ -39,14 +39,14 @@ share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
   [persistLowerCase|
 
-Vehicle
+Vehicle json
   vehicleType VehicleType  
   brand String
   model String
   number String
   deriving Show
 
-User 
+User json
   name String 
   surname String 
   username String
@@ -58,7 +58,7 @@ User
   driver_licence Bool Maybe
   deriving Show
 
-Order 
+Order json 
   address String
   destination String
   client UserId

@@ -32,11 +32,11 @@ instance FromJSON UserRole
 
 data User = User
   { name :: String
-  , surname :: Maybe String
-  , username :: Maybe String
-  , email :: Maybe String
-  , password :: Maybe String
-  , phone_number :: Maybe String
+  , surname :: String
+  , username :: String
+  , email :: String
+  , password :: String
+  , phone_number :: String
   , car :: Maybe Vehicle
   , driver_licence :: Maybe Bool
   , role :: UserRole
