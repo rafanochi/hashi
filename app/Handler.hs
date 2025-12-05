@@ -10,11 +10,14 @@ import Foreign.C (CInt)
 import Hanekawa (Status (Err, Ok))
 import Types (ReplaceUser (ReplaceUser, uid, user))
 
+handleError :: CInt -> String -> IO ()
+handleError sockfd = sendJson sockfd Err
+
 handleRequestError :: CInt -> IO ()
-handleRequestError sockfd = do
-  let msg = "Wrong Request"
-  putStrLn msg
-  sendJson sockfd Err msg
+handleRequestError sockfd = handleError sockfd "Wrong Request"
+
+handleParseError :: (Show a) => CInt -> a -> IO ()
+handleParseError sockfd msg = handleError sockfd $ "Can't parse params: " ++ show msg
 
 createUser :: ConnectionPool -> CInt -> Value -> IO ()
 createUser pool sockfd json = do
@@ -22,28 +25,44 @@ createUser pool sockfd json = do
     Success _user -> do
       _ <- runSqlPool (insert _user) pool
       sendJson sockfd Ok $ "User created successfully: " ++ show _user
-    Error msg -> sendJson sockfd Ok $ "Can't parse params: " ++ show msg
+    Error msg -> handleParseError sockfd msg
 
 getUser :: ConnectionPool -> CInt -> Value -> IO ()
 getUser pool sockfd json = do
   case fromJSON @UserId json of
-    Success _uid -> do
-      _user <- runSqlPool (get _uid) pool
-      sendJson sockfd Ok _user
-    Error msg -> sendJson sockfd Ok $ "Can't parse params: " ++ show msg
+    Success x -> do
+      y <- runSqlPool (get x) pool
+      sendJson sockfd Ok y
+    Error msg -> handleParseError sockfd msg
 
 replaceUser :: ConnectionPool -> CInt -> Value -> IO ()
 replaceUser pool sockfd json = do
   case fromJSON @ReplaceUser json of
-    Success ReplaceUser{uid = _uid, user = _user} -> do
-      _ <- runSqlPool (replace _uid _user) pool
-      sendJson sockfd Ok $ "User updated successfully: " ++ show _user
-    Error msg -> sendJson sockfd Ok $ "Can't parse params: " ++ show msg
+    Success ReplaceUser{uid = x, user = y} -> do
+      _ <- runSqlPool (replace x y) pool
+      sendJson sockfd Ok $ "User updated successfully: " ++ show y
+    Error msg -> handleParseError sockfd msg
 
 deleteUser :: ConnectionPool -> CInt -> Value -> IO ()
 deleteUser pool sockfd json = do
   case fromJSON @UserId json of
-    Success _uid -> do
-      _user <- runSqlPool (delete _uid) pool
-      sendJson sockfd Ok $ show _user ++ " user deleted successfully"
-    Error msg -> sendJson sockfd Ok $ "Can't parse params: " ++ show msg
+    Success x -> do
+      y <- runSqlPool (delete x) pool
+      sendJson sockfd Ok $ show y ++ " user deleted successfully"
+    Error msg -> handleParseError sockfd msg
+
+createOrder :: ConnectionPool -> CInt -> Value -> IO ()
+createOrder pool sockfd json = do
+  case fromJSON @DB.Order json of
+    Success x -> do
+      _ <- runSqlPool (insert x) pool
+      sendJson sockfd Ok $ "User created successfully: " ++ show x
+    Error msg -> handleParseError sockfd msg
+
+getOrder :: ConnectionPool -> CInt -> Value -> IO ()
+getOrder pool sockfd json = do
+  case fromJSON @OrderId json of
+    Success x -> do
+      _order <- runSqlPool (get x) pool
+      sendJson sockfd Ok x
+    Error msg -> handleParseError sockfd msg
