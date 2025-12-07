@@ -77,7 +77,7 @@ int run_server(int sockfd) {
 //     if (newsockfd < 0)
 //       continue; // accept failed, skip
 
-//     send_resp(newsockfd, resp); // ✅ send on the accepted socket
+//     send_resp(newsockfd, resp); // send on the accepted socket
 
 //     close(newsockfd);
 //   }

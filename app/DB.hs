@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE EmptyDataDecls #-}
@@ -23,17 +24,20 @@ import Database.Persist.Sqlite
 import Database.Persist.TH
 import GHC.Generics
 
-data VehicleType = Light | Medium | Heavy deriving (Show, Read, Eq, Generic)
-
+data VehicleType = Light | Medium | Heavy
+  deriving stock (Read, Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
 derivePersistField "VehicleType"
-instance FromJSON VehicleType
-instance ToJSON VehicleType
 
-data UserRole = Client | Courier deriving (Show, Read, Eq, Generic)
-
+data UserRole = Client | Courier
+  deriving stock (Read, Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
 derivePersistField "UserRole"
-instance ToJSON UserRole
-instance FromJSON UserRole
+
+data OrderStatus = Queued | Transferring | Completed
+  deriving stock (Read, Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+derivePersistField "OrderStatus"
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -59,13 +63,14 @@ User json
   deriving Show
 
 Order json 
-  address String
-  destination String
+  fromArea String
+  toArea String
   client UserId
   courier UserId
   volume Double 
   mass Double
   time Day
+  currentHub HubId Maybe
   deriving Show
 
 Hub json
