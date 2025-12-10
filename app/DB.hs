@@ -83,4 +83,8 @@ HubConnection json
   toId HubId
   distance Double
   deriving Show
+
+FreeCouriers 
+  courierId UserId
+  free Bool
 |]
