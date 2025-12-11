@@ -1,6 +1,0 @@
-module Util where
-import DB (Hub)
-
-short :: [HubConnection] -> (Hub, Hub) -> [Hub] 
-short edges (from to) =  
-
