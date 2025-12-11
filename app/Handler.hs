@@ -4,7 +4,7 @@ module Handler where
 
 import DB
 import Data.Aeson
-import Database.Persist.Sql (ConnectionPool, Entity (Entity), PersistStoreRead (get), PersistStoreWrite (delete, insert, replace), runSqlPool, selectList)
+import Database.Persist.Sql (ConnectionPool, PersistStoreRead (get), PersistStoreWrite (delete, insert, replace), runSqlPool, selectList)
 import FFI (sendJson)
 import Foreign.C (CInt)
 import Hanekawa (Status (Err, Ok))
@@ -57,9 +57,8 @@ createOrder :: ConnectionPool -> CInt -> Value -> IO ()
 createOrder pool sockfd json = do
   case fromJSON @DB.Order json of
     Success x -> do
-      let from = OrderFromArea
-      let to = OrderToArea
-      let hubs = runSqlPool (selectList [] [] :: [Entity Hub])
+      let (fromArea, toArea) = (orderFromArea x, orderToArea x)
+      hubs <- runSqlPool (selectList @Hub [] []) pool
 
       _ <- runSqlPool (insert x) pool
       sendJson sockfd Ok $ "Order created successfully: " ++ show x

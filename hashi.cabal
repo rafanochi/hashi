@@ -53,6 +53,7 @@ executable hashi
     Hanekawa
     Handler
     Router
+    Util
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:

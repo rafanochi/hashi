@@ -71,6 +71,7 @@ Order json
   mass Double
   time Day
   currentHub HubId Maybe
+  trajectory [Hub]
   deriving Show
 
 Hub json
@@ -79,8 +80,8 @@ Hub json
   deriving Show
 
 HubConnection json
-  fromHub HubId
-  toId HubId
+  fromHub Hub
+  toHub Hub
   distance Double
   deriving Show
 
